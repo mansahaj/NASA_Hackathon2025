@@ -1,28 +1,59 @@
 import React, { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Stars } from "@react-three/drei";
+import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 
-function Sun() {
+function SunMaterial({ textureUrl }) {
+  const map = useTexture(textureUrl);
+  return (
+    <meshStandardMaterial
+      map={map}
+      emissive={"#ffcc33"}
+      emissiveIntensity={1.0}
+      color={"#ffaa00"}
+    />
+  );
+}
+
+function Sun({ textureUrl }) {
   return (
     <mesh>
       <sphereGeometry args={[1.2, 32, 32]} />
-      <meshStandardMaterial
-        emissive={"#ffcc33"}
-        emissiveIntensity={1.2}
-        color={"#ffaa00"}
-      />
+      {textureUrl ? (
+        <SunMaterial textureUrl={textureUrl} />
+      ) : (
+        <meshStandardMaterial
+          emissive={"#ffcc33"}
+          emissiveIntensity={1.2}
+          color={"#ffaa00"}
+        />
+      )}
     </mesh>
   );
 }
 
-function Planet({ distance = 3, size = 0.3, color = "#77aaff", speed = 0.5 }) {
+function PlanetMaterial({ textureUrl, color }) {
+  const map = useTexture(textureUrl);
+  return <meshStandardMaterial map={map} color={color || "white"} />;
+}
+
+function Planet({
+  distance = 3,
+  size = 0.3,
+  color = "#77aaff",
+  speed = 0.5,
+  textureUrl,
+}) {
   const [theta] = React.useState(Math.random() * Math.PI * 2);
   const ref = React.useRef();
   useAnimation(ref, distance, speed, theta);
   return (
     <mesh ref={ref}>
       <sphereGeometry args={[size, 32, 32]} />
-      <meshStandardMaterial color={color} />
+      {textureUrl ? (
+        <PlanetMaterial textureUrl={textureUrl} color={color} />
+      ) : (
+        <meshStandardMaterial color={color} />
+      )}
     </mesh>
   );
 }
@@ -58,8 +89,8 @@ export default function ExoplanetInfo() {
         </p>
       </div>
       <div className="canvas-wrap">
-        <Canvas camera={{ position: [0, 3, 8], fov: 50 }}>
-          <ambientLight intensity={0.3} />
+        <Canvas camera={{ position: [0, 3, 8], fov: 60 }}>
+          <ambientLight intensity={1.3} />
           <pointLight position={[0, 0, 0]} intensity={2} color={"#ffd27d"} />
           <Suspense fallback={null}>
             <Stars
@@ -70,10 +101,28 @@ export default function ExoplanetInfo() {
               fade
               speed={1}
             />
-            <Sun />
-            <Planet distance={3} size={0.35} color={"#7fc8ff"} speed={0.6} />
-            <Planet distance={4.5} size={0.25} color={"#a0ffa0"} speed={0.45} />
-            <Planet distance={6} size={0.6} color={"#c8a57f"} speed={0.25} />
+            <Sun textureUrl={"/textures/sun.jpg"} />
+            <Planet
+              distance={3}
+              size={0.35}
+              color={"#7fc8ff"}
+              speed={0.6}
+              textureUrl={"/textures/earth.jpg"}
+            />
+            {/* <Planet
+              distance={4.5}
+              size={0.25}
+              color={"#a0ffa0"}
+              speed={0.45}
+              // textureUrl={"/textures/planet2.jpg"}
+            />
+            <Planet
+              distance={6}
+              size={0.6}
+              color={"#c8a57f"}
+              speed={0.25}
+              // textureUrl={"/textures/planet3.jpg"}
+            /> */}
           </Suspense>
           <OrbitControls enableDamping dampingFactor={0.05} />
         </Canvas>
