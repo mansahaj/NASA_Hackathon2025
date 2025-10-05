@@ -1,0 +1,69 @@
+{
+  "models": [
+    {
+      "name": "RandomForest",
+      "accuracy": 0.9122,
+      "precision": 0.8823,
+      "recall": 0.8834,
+      "f1_score": 0.8828,
+      "roc_auc": 0.9731,
+      "confusion_matrix": {
+        "matrix": [[1278, 97], [96, 727]],
+        "true_positive": 727,
+        "true_negative": 1278,
+        "false_positive": 97,
+        "false_negative": 96
+      }
+    },
+    {
+      "name": "MLP",
+      "accuracy": 0.8894,
+      "precision": 0.8118,
+      "recall": 0.9174,
+      "f1_score": 0.8614,
+      "roc_auc": 0.9572,
+      "confusion_matrix": {
+        "matrix": [[1200, 175], [68, 755]],
+        "true_positive": 755,
+        "true_negative": 1200,
+        "false_positive": 175,
+        "false_negative": 68
+      }
+    },
+    {
+      "name": "BoostedTree",
+      "accuracy": 0.9254,
+      "precision": 0.8918,
+      "recall": 0.9113,
+      "f1_score": 0.9014,
+      "roc_auc": 0.9784,
+      "confusion_matrix": {
+        "matrix": [[1284, 91], [73, 750]],
+        "true_positive": 750,
+        "true_negative": 1284,
+        "false_positive": 91,
+        "false_negative": 73
+      }
+    },
+    {
+      "name": "SVM",
+      "accuracy": 0.8562,
+      "precision": 0.7729,
+      "recall": 0.8724,
+      "f1_score": 0.8196,
+      "roc_auc": 0.9313,
+      "confusion_matrix": {
+        "matrix": [[1164, 211], [105, 718]],
+        "true_positive": 718,
+        "true_negative": 1164,
+        "false_positive": 211,
+        "false_negative": 105
+      }
+    },
+    {
+      "name": "CNN",
+      "status": "pending",
+      "note": "Awaiting results from training/evaluation pipeline."
+    }
+  ]
+}

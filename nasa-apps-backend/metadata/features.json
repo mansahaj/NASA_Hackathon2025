@@ -1,0 +1,112 @@
+{
+    "features": {
+        "ordered_names": [
+            "koi_period",
+            "koi_time0bk",
+            "koi_impact",
+            "koi_duration",
+            "koi_depth",
+            "koi_prad",
+            "koi_teq",
+            "koi_insol",
+            "koi_model_snr",
+            "koi_steff",
+            "koi_slogg",
+            "koi_srad",
+            "ra",
+            "dec",
+            "koi_kepmag"
+        ],
+        "schema": {
+            "koi_period": {
+                "dtype": "float64",
+                "unit": "days",
+                "description": "Orbital period of the planet candidate."
+            },
+            "koi_time0bk": {
+                "dtype": "float64",
+                "unit": "BKJD",
+                "description": "Transit epoch in Barycentric Kepler Julian Date."
+            },
+            "koi_impact": {
+                "dtype": "float64",
+                "unit": "—",
+                "description": "Transit impact parameter (0=center, 1=limb)."
+            },
+            "koi_duration": {
+                "dtype": "float64",
+                "unit": "hours",
+                "description": "Transit duration."
+            },
+            "koi_depth": {
+                "dtype": "float64",
+                "unit": "ppm",
+                "description": "Transit depth in parts per million."
+            },
+            "koi_prad": {
+                "dtype": "float64",
+                "unit": "R_earth",
+                "description": "Planet radius in Earth radii.",
+                "bins_hint": [
+                    3.0,
+                    8.0
+                ]
+            },
+            "koi_teq": {
+                "dtype": "float64",
+                "unit": "K",
+                "description": "Planet equilibrium temperature (approximate)."
+            },
+            "koi_insol": {
+                "dtype": "float64",
+                "unit": "Earth=1",
+                "description": "Stellar insolation relative to Earth."
+            },
+            "koi_model_snr": {
+                "dtype": "float64",
+                "unit": "—",
+                "description": "Model signal-to-noise ratio for the detection."
+            },
+            "koi_steff": {
+                "dtype": "float64",
+                "unit": "K",
+                "description": "Stellar effective temperature."
+            },
+            "koi_slogg": {
+                "dtype": "float64",
+                "unit": "cgs",
+                "description": "Stellar surface gravity (log g)."
+            },
+            "koi_srad": {
+                "dtype": "float64",
+                "unit": "R_sun",
+                "description": "Stellar radius in Solar radii."
+            },
+            "ra": {
+                "dtype": "float64",
+                "unit": "deg",
+                "description": "Right ascension (J2000)."
+            },
+            "dec": {
+                "dtype": "float64",
+                "unit": "deg",
+                "description": "Declination (J2000)."
+            },
+            "koi_kepmag": {
+                "dtype": "float64",
+                "unit": "mag",
+                "description": "Kepler magnitude of the target star."
+            }
+        }
+    },
+    "target": {
+        "name": "is_exoplanet",
+        "positive_label": 1,
+        "description": "Binary label indicating a likely planet (1) vs not-planet (0)."
+    },
+    "notes": [
+        "All features are numeric (float64) and must be finite.",
+        "The order in features.ordered_names is the canonical model input order.",
+        "visualization_keys are the subset used by the Three.js viewer."
+    ]
+}
