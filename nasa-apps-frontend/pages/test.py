@@ -177,10 +177,27 @@ def run_predictions(model, scaler, uploaded_file):
     csv = results.to_csv(index=False).encode("utf-8")
     st.download_button("Download Predictions as CSV", csv, "predictions.csv", "text/csv")
 
-    return results
+    # --- Filter only confirmed exoplanets ---
+    confirmed_df = results[results["Prediction"] == 1].copy()
+    if confirmed_df.empty:
+        st.warning("No confirmed exoplanets found in this dataset.")
+    else:
+        # --- Save CSV of confirmed only ---
+        st.markdown("### Confirmed Exoplanets")
+        st.dataframe(confirmed_df.head())
+        csv_confirmed = confirmed_df.to_csv(index=False).encode("utf-8")
+        st.download_button(
+            label="Download Confirmed Exoplanets CSV",
+            data=csv_confirmed,
+            file_name="confirmed_exoplanets.csv",
+            mime="text/csv"
+        )
+
+    return results, confirmed_df
 
 
-def display_visualizations(results):
+def display_visualizations(results, confirmed_df, features_json_path="../nasa-apps-backend/metadata/features.json"):
+
     if results.empty or "Prediction" not in results.columns:
         st.warning("No prediction data found.")
         return
@@ -211,14 +228,15 @@ def display_visualizations(results):
         ax2.axis("equal")
         st.pyplot(fig2, use_container_width=True)
 
-    # Confirmed exoplanets
-    confirmed_df = results[results["Prediction"] == 1].copy()
+    # Confirmed exoplanets by type
     if not confirmed_df.empty:
         confirmed_df["Exoplanet_Type"] = confirmed_df.apply(classify_exoplanet_type, axis=1)
         type_counts = confirmed_df["Exoplanet_Type"].value_counts()
 
         fig3, ax3 = plt.subplots(figsize=(6, 4))
-        ax3.barh(type_counts.index, type_counts.values, color=sns.color_palette("viridis", len(type_counts)), height=0.6, edgecolor='black')
+        ax3.barh(type_counts.index, type_counts.values,
+                 color=sns.color_palette("viridis", len(type_counts)),
+                 height=0.6, edgecolor='black')
         for i, v in enumerate(type_counts.values):
             ax3.text(v + max(type_counts.values)*0.01, i, str(v), va='center', fontsize=8)
         ax3.set_xlabel("Count", fontsize=9)
@@ -229,6 +247,7 @@ def display_visualizations(results):
         ax3.spines['right'].set_visible(False)
         fig3.tight_layout()
         st.pyplot(fig3, use_container_width=True)
+
 
 
 def main():
@@ -258,9 +277,9 @@ def main():
     # Sidebar CSV upload and Run button
     uploaded_file = st.sidebar.file_uploader("Upload CSV for prediction", type=["csv"])
     if uploaded_file is not None and st.sidebar.button("Run Model"):
-        results = run_predictions(model, scaler, uploaded_file)
+        (results, confirmed_df) = run_predictions(model, scaler, uploaded_file)
         with st.expander("View Prediction Visualizations and Metrics", expanded=True):
-            display_visualizations(results)
+            display_visualizations(results, confirmed_df)
     else:
         # If no results yet, show a friendly message
         st.markdown("""
