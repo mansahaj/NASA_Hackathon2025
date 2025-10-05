@@ -5,4 +5,4 @@ st.set_page_config(
     page_icon="🤖",
 )
 
-st.switch_page("pages/test.py")
+st.switch_page("pages/home.py")
