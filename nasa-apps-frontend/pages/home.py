@@ -8,8 +8,12 @@ import numpy as np
 
 import joblib
 
+# --- Global Variables --- #
+model_options = {
+    "Random Forest": "../nasa-apps-backend/models/random_forest_model.pkl",
+}
 
-"""PAGE CONFIGURATION"""
+# --- PAGE CONFIGURATION --- #
 st.set_page_config(
     page_title="Hunting for Exoplanets with AI", 
     page_icon="🤖",
@@ -30,15 +34,16 @@ def config():
         </style>
     """, unsafe_allow_html=True)
 
-"""HELPER FUNCTIONS FOR LOADING MODELS/SCALERS"""
-def load_models_and_scaler():
-    # Load Models
-    md_random_forest = joblib.load('../nasa-apps-backend/models/random_forest_model.pkl')
 
-    # Load Scalers
-    sc_random_forest = joblib.load('../nasa-apps-backend/scalers/random_forest_scaler.pkl')
+# --- HELPER FUNCTIONS FOR LOADING MODELS/SCALERS --- #
+def load_model_and_scaler(model):
+    # Load Model
+    model = joblib.load(model)
 
-    return (md_random_forest, sc_random_forest)
+    # Load Scaler
+    scaler = joblib.load('../nasa-apps-backend/scalers/random_forest_scaler.pkl')
+
+    return (model, scaler)
 
 """Exoplanet's (Challenge) Explained"""
 def intro():
@@ -79,42 +84,66 @@ def intro():
     # Horizontal Line
     st.markdown("---")
 
-"""Demo using candidates data"""
-def demo():
-    if st.button("Run Demo"):
+"""Running the model"""
+def run_model():
+
+    selected_model = st.selectbox("Select a Model:", list(model_options.keys()))
+
+    try:
+        model_path = model_options[selected_model]
+        (md, sc) = load_model_and_scaler(model_path)
+        st.success(f"{selected_model} loaded successfully!")
+    except Exception as e:
+        st.error(f"Error loading {selected_model}: {e}")
+
+    # CSV upload section
+    uploaded_file = st.file_uploader("Upload a CSV file for prediction", type=["csv"])
+
+    if uploaded_file is not None:
         try:
-            # Load candidate data
-            candidates_df = pd.read_csv("../nasa-apps-backend/Data/candidate_rows.csv")
+            candidates_df = pd.read_csv(uploaded_file)
+            st.success(f"File '{uploaded_file.name}' uploaded successfully!")
+            
+            st.markdown("### Preview of Uploaded Data")
+            st.dataframe(candidates_df.head())
 
-            # Scale the features using the random forest scaler
-            candidates_scaled = sc_rd.transform(candidates_df)
+            if st.button("Run Model"):
+                try:
+                    # Load candidate data
+                    candidates_df = pd.read_csv("../nasa-apps-backend/Data/candidate_rows.csv")
 
-            # Predict using random forest model
-            md_rd_pred = md_rd.predict(candidates_scaled)
+                    # Scale the features using the random forest scaler
+                    candidates_scaled = sc.transform(candidates_df)
 
-            # Combine results
-            results = candidates_df.copy()
-            results["Prediction"] = md_rd_pred
+                    # Predict using random forest model
+                    pred = md.predict(candidates_scaled)
 
-            # Display output
-            st.markdown("### Prediction Results")
-            st.dataframe(results.head())
+                    # Combine results
+                    results = candidates_df.copy()
+                    results["Prediction"] = pred
 
-        except FileNotFoundError:
-            st.error("'candidate_rows.csv' file not found. Please check the file path.")
+                    # Display output
+                    st.markdown("### Prediction Results")
+                    st.dataframe(results.head())
+
+                except FileNotFoundError:
+                    st.error("'candidate_rows.csv' file not found. Please check the file path.")
+                except Exception as e:
+                    st.error(f"An error occurred: {e}")
         except Exception as e:
-            st.error(f"An error occurred: {e}")
+            st.error(f"An error occurred while processing the file: {e}")
 
-
-"""Grab all models and scalers"""
-(md_rd, sc_rd) = load_models_and_scaler()
+def display_results():
+    pass
 
 def main():
     config()
 
     intro()
 
-    demo()
+    run_model()
+
+    display_results()
 
 
 
