@@ -13,7 +13,10 @@ import joblib
 import streamlit as st
 
 from type_exoplanet import classify_exoplanet_type
-logo_path = "logo.png"
+
+# Get the directory of the current script and construct path to logo
+current_dir = os.path.dirname(os.path.abspath(__file__))
+logo_path = os.path.join(os.path.dirname(current_dir), "logo.png")
 
 
 # --- Global Variables --- #
