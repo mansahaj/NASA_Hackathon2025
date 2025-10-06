@@ -3,7 +3,7 @@
 To run this project, make sure you do the following:
 - Setup a virtual environment for this repo.
     - Windows: _python -m venv venv_
-- Run the following like of code to install all dependencies required for this app. _(Note: May take a while)_
+- Run the following line of code to install all dependencies required for this app. _(Note: May take a while)_
     - _pip install -r requirements.txt_
 
 ## Frontend - Streamlit App
