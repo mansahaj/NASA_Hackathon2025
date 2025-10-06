@@ -1,6 +1,7 @@
 import os
 import io
 import base64
+import sys
 
 import pickle
 import json
@@ -12,25 +13,32 @@ import matplotlib.patches as patches
 import joblib
 import streamlit as st
 
-from type_exoplanet import classify_exoplanet_type
-
-# Get the directory of the current script and construct path to logo
+# Get the directory of the current script and construct paths
 current_dir = os.path.dirname(os.path.abspath(__file__))
-logo_path = os.path.join(os.path.dirname(current_dir), "logo.png")
+frontend_dir = os.path.dirname(current_dir)  # nasa-apps-frontend directory
 
+# Add the frontend directory to Python path to ensure imports work
+if frontend_dir not in sys.path:
+    sys.path.append(frontend_dir)
+
+from type_exoplanet import classify_exoplanet_type
+project_root = os.path.dirname(frontend_dir)  # NASA_Hackathon2025 directory
+backend_dir = os.path.join(project_root, "nasa-apps-backend")
+
+logo_path = os.path.join(frontend_dir, "logo.png")
 
 # --- Global Variables --- #
 model_options = {
-    "Random Forest": "../nasa-apps-backend/models/random_forest_model.pkl",
-    "SVM": "../nasa-apps-backend/models/SVM.pkl",
-    "MLP": "../nasa-apps-backend/models/MLP.pkl",
-    "CNN": "../nasa-apps-backend/models/exoplanet_cnn_model50epochs.h5"
+    "Random Forest": os.path.join(backend_dir, "models", "random_forest_model.pkl"),
+    "SVM": os.path.join(backend_dir, "models", "SVM.pkl"),
+    "MLP": os.path.join(backend_dir, "models", "MLP.pkl"),
+    "CNN": os.path.join(backend_dir, "models", "exoplanet_cnn_model_50epochs.h5")
 }
 
 SCALER_PATHS = {
-    "Random Forest": "../nasa-apps-backend/scalers/random_forest_scaler.pkl",
-    "SVM": "../nasa-apps-backend/scalers/random_forest_scaler.pkl",  # update if different
-    "MLP": "../nasa-apps-backend/scalers/random_forest_scaler.pkl",
+    "Random Forest": os.path.join(backend_dir, "scalers", "random_forest_scaler.pkl"),
+    "SVM": os.path.join(backend_dir, "scalers", "random_forest_scaler.pkl"),  # update if different
+    "MLP": os.path.join(backend_dir, "scalers", "random_forest_scaler.pkl"),
     "CNN": None  # CNN might not need scaler
 }
 
@@ -69,7 +77,8 @@ def load_model_and_scaler(model_name):
 
 def load_manifest():
     try:
-        with open("../nasa-apps-backend/metadata/manifest.json", "r") as f:
+        manifest_path = os.path.join(backend_dir, "metadata", "manifest.json")
+        with open(manifest_path, "r") as f:
             return json.load(f)
     except FileNotFoundError:
         st.error("manifest.json not found in models directory.")
